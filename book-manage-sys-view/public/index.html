@@ -1,20 +1,382 @@
 <!DOCTYPE html>
-<html lang="">
-
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="icon" href="/logo.png">
-  <title>图书管理系统 - 借书 | 还书 | 订阅书 </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧图书管理系统</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 600px;
+        }
+        
+        .header {
+            background: linear-gradient(to right, #2c3e50, #4a6491);
+            padding: 30px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 10px;
+            object-fit: contain;
+            background: white;
+            padding: 5px;
+        }
+        
+        .title {
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 500px;
+        }
+        
+        .welcome-section {
+            padding: 40px;
+            background: linear-gradient(to bottom right, #f8f9fa, #e9ecef);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .welcome-title {
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .welcome-text {
+            color: #555;
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .features {
+            margin-top: 30px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            color: #3498db;
+        }
+        
+        .login-section {
+            padding: 40px;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .login-title {
+            font-size: 28px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(to right, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+        }
+        
+        .register-link a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .copyright {
+            opacity: 0.8;
+            margin-top: 10px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                text-align: center;
+                gap: 15px;
+            }
+            
+            .title {
+                font-size: 28px;
+            }
+            
+            .welcome-title {
+                font-size: 28px;
+            }
+            
+            .login-section {
+                padding: 30px 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .welcome-section,
+            .login-section {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-  <div id="app"></div>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="logo.png" alt="图书管理系统 Logo" class="logo">
+                <div>
+                    <h1 class="title">智慧图书管理系统</h1>
+                    <p class="subtitle">智能化、高效化的图书管理解决方案</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2 class="welcome-title">欢迎使用智慧图书管理系统</h2>
+                <p class="welcome-text">
+                    一个集图书管理、借阅追踪、会员管理、数据分析于一体的现代化图书管理系统。
+                    帮助图书馆、学校和企业实现图书资源的智能化管理。
+                </p>
+                
+                <div class="features">
+                    <div class="feature-item">
+                        <span class="feature-icon">📚</span>
+                        <span>智能图书管理，支持扫码入库</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔍</span>
+                        <span>快速检索系统，支持多条件查询</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">👥</span>
+                        <span>会员管理系统，记录借阅历史</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>数据统计分析，生成可视化报表</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔔</span>
+                        <span>智能提醒功能，逾期自动通知</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-section">
+                <h2 class="login-title">管理员登录</h2>
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            placeholder="请输入管理员账号" 
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="请输入登录密码" 
+                            required
+                        >
+                    </div>
+                    
+                    <button type="submit" class="login-btn">登录系统</button>
+                    
+                    <div class="register-link">
+                        没有账户？<a href="#" onclick="showRegister()">立即注册</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 智慧图书管理系统 版权所有</p>
+            <p class="copyright">技术支持：张许烨，陈丽，许梓晗 </p>
+        </div>
+    </div>
+
+    <script>
+        // 登录表单提交处理
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 简单的客户端验证
+            if (!username || !password) {
+                alert('请输入用户名和密码！');
+                return;
+            }
+            
+            // 模拟登录过程
+            console.log('登录信息：', { username, password });
+            
+            // 这里实际项目中会发送到后端验证
+            // 现在先跳转到主页面
+            alert('登录成功！正在进入系统...');
+            
+            // 模拟跳转到主页面
+            setTimeout(() => {
+                window.location.href = 'main.html';
+            }, 1000);
+        });
+        
+        // 注册功能
+        function showRegister() {
+            alert('注册功能正在开发中...');
+        }
+        
+        // 自动聚焦到用户名输入框
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('username').focus();
+        });
+        
+        // 回车键提交
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const activeElement = document.activeElement;
+                if (activeElement.tagName === 'INPUT') {
+                    document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                }
+            }
+        });
+    </script>
 </body>
-
-<style>
-  
-</style>
-
 </html>
