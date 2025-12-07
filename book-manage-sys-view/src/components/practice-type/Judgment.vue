@@ -1,113 +1,472 @@
 <template>
-    <div style="box-sizing: border-box;">
-        <el-tabs v-model="activeName" style="min-height: 500px;">
-            <el-tab-pane label="1. 完善题目" name="first">
-                <Editor height="calc(100vh - 400px)" :receiveContent="operationData.askItem"
-                    @on-receive="onReceiveContent" />
-            </el-tab-pane>
-            <el-tab-pane label="2. 设置答案" name="second">
-                <div class="options-item" v-for="(question, index) in operationData.question" :key="index">
-                    <span :style="{ backgroundColor: isCheck(question) ? '#a61b29' : '' }" @click="selected(question)"
-                        class="check-item"></span>
-                    <span :style="{ color: isCheck(question) ? '#a61b29' : '' }" class="index-item">{{
-                        question.type }}</span>
-                    <input :style="{ color: isCheck(question) ? '#a61b29' : '' }" v-model="question.value"
-                        placeholder="选项答案详解" />
-                </div>
-            </el-tab-pane>
-            <el-tab-pane label="3. 设置解析答案" name="third">
-                <div style="padding: 10px 20px 0 0;">
-                    <textarea style="width: 100%;min-height: 300px;max-height: 500px;border: none;outline: none;"  v-model="data.parseAnswer" placeholder="解析过程" ></textarea>
-                </div>
-            </el-tab-pane>
-        </el-tabs>
+  <div class="judgment-question" :class="{ 'has-error': error }">
+    <!-- 题目信息 -->
+    <div class="question-header">
+      <div class="question-meta">
+        <span class="question-type">判断题</span>
+        <span class="question-score" v-if="question.score">
+          ({{ question.score }}分)
+        </span>
+      </div>
+      
+      <div class="question-title" v-html="question.title"></div>
     </div>
+    
+    <!-- 答题区域 -->
+    <div class="judgment-options">
+      <div
+        class="option"
+        :class="{ 
+          'selected': answer === true, 
+          'correct': showAnswer && question.correctAnswer === true,
+          'wrong': showAnswer && answer === true && question.correctAnswer === false
+        }"
+        @click="selectOption(true)"
+      >
+        <div class="option-icon">✓</div>
+        <div class="option-text">正确</div>
+      </div>
+      
+      <div
+        class="option"
+        :class="{ 
+          'selected': answer === false, 
+          'correct': showAnswer && question.correctAnswer === false,
+          'wrong': showAnswer && answer === false && question.correctAnswer === true
+        }"
+        @click="selectOption(false)"
+      >
+        <div class="option-icon">✗</div>
+        <div class="option-text">错误</div>
+      </div>
+      
+      <!-- 不确定选项 -->
+      <div
+        v-if="question.allowUndecided"
+        class="option"
+        :class="{ 'selected': answer === null }"
+        @click="selectOption(null)"
+      >
+        <div class="option-icon">?</div>
+        <div class="option-text">不确定</div>
+      </div>
+    </div>
+    
+    <!-- 错误提示 -->
+    <div v-if="error" class="error-message">
+      {{ error }}
+    </div>
+    
+    <!-- 答案解析 -->
+    <div v-if="showAnswer && question.explanation" class="explanation">
+      <h4>答案解析：</h4>
+      <div class="explanation-content" v-html="question.explanation"></div>
+      
+      <div class="correct-answer">
+        <strong>正确答案：</strong>
+        <span :class="question.correctAnswer === true ? 'correct-text' : 'wrong-text'">
+          {{ question.correctAnswer === true ? '正确' : '错误' }}
+        </span>
+      </div>
+      
+      <div v-if="question.reference" class="reference">
+        <strong>参考：</strong>{{ question.reference }}
+      </div>
+    </div>
+    
+    <!-- 知识点标签 -->
+    <div v-if="question.tags && question.tags.length" class="knowledge-tags">
+      <h4>知识点：</h4>
+      <div class="tags">
+        <span
+          v-for="tag in question.tags"
+          :key="tag"
+          class="tag"
+        >
+          {{ tag }}
+        </span>
+      </div>
+    </div>
+    
+    <!-- 正确率统计 -->
+    <div v-if="showStatistics && question.statistics" class="statistics">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-label">正确率</div>
+          <div class="stat-value">{{ question.statistics.correctRate }}%</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">选择正确</div>
+          <div class="stat-value">{{ question.statistics.selectTrue || 0 }}人</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-label">选择错误</div>
+          <div class="stat-value">{{ question.statistics.selectFalse || 0 }}人</div>
+        </div>
+      </div>
+      
+      <div class="stat-chart">
+        <div class="chart-bar true-bar" :style="{ width: question.statistics.trueRate + '%' }">
+          正确 {{ question.statistics.trueRate }}%
+        </div>
+        <div class="chart-bar false-bar" :style="{ width: question.statistics.falseRate + '%' }">
+          错误 {{ question.statistics.falseRate }}%
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
+
 <script>
-// 单选题组件
-import Editor from "@/components/Editor"
 export default {
-    components: { Editor },
-    props: {
-        data: {
-            type: Object,
-            default: function () {
-                return {};
-            }
-        },
+  name: 'JudgmentQuestion',
+  props: {
+    question: {
+      type: Object,
+      required: true,
+      default: () => ({
+        id: '',
+        title: '',
+        score: 0,
+        correctAnswer: null, // true/false
+        allowUndecided: false,
+        explanation: '',
+        reference: '',
+        tags: [],
+        statistics: null
+      })
     },
-    watch: {
-        data: {
-            handler(newValue, oldValue) {
-                this.operationData = newValue;
-                this.$emit('on-listenner', newValue);
-            },
-            deep: true,
-            immediate: true,
-        },
+    value: {
+      type: Boolean,
+      default: null
     },
-    data() {
-        return {
-            operationData: {},
-            askItem: '',
-            questionNumber: 1,
-            answerNumber: 1,
-            activeName: 'first',
-        }
+    showAnswer: {
+      type: Boolean,
+      default: false
     },
-    methods: {
-        isCheck(answer) {
-            return this.operationData.rightAnswer.find(type => type === answer.type) !== undefined;
-        },
-        selected(answer) {
-            // 单选题，只能选一个
-            const flag = this.operationData.rightAnswer.find(type => type === answer.type);
-            if (flag !== undefined) {
-                this.operationData.rightAnswer = this.operationData.rightAnswer.filter(type => type !== answer.type);
-            } else {
-                this.operationData.rightAnswer.push(answer.type);
-            }
-        },
-        onReceiveContent(html) {
-            this.operationData.askItem = html;
-        },
+    showStatistics: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      answer: this.value,
+      error: ''
+    }
+  },
+  watch: {
+    value(newVal) {
+      this.answer = newVal
+    },
+    answer(newVal) {
+      this.$emit('input', newVal)
+      this.validate()
+    }
+  },
+  methods: {
+    selectOption(value) {
+      this.answer = value
+    },
+    
+    validate() {
+      if (this.question.required && this.answer === null) {
+        this.error = '请选择答案'
+        return false
+      }
+      
+      this.error = ''
+      return true
+    },
+    
+    // 检查答案是否正确
+    checkAnswer() {
+      if (this.answer === null) {
+        return { correct: false, score: 0 }
+      }
+      
+      const isCorrect = this.answer === this.question.correctAnswer
+      const score = isCorrect ? (this.question.score || 0) : 0
+      
+      return {
+        correct: isCorrect,
+        score: score,
+        userAnswer: this.answer,
+        correctAnswer: this.question.correctAnswer
+      }
+    },
+    
+    // 供父组件调用的方法
+    getAnswer() {
+      return this.answer
+    },
+    
+    clear() {
+      this.answer = null
+      this.error = ''
+    },
+    
+    selectCorrect() {
+      this.answer = this.question.correctAnswer
+    }
+  }
 }
-
 </script>
-<style lang="scss" scoped>
-.options-item {
-    padding: 25px 0;
-    border-bottom: 1px solid #f1f1f1;
+
+<style scoped lang="scss">
+.judgment-question {
+  border: 1px solid #e1e5eb;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  background: white;
+  
+  &.has-error {
+    border-color: #f56c6c;
+  }
+  
+  .question-header {
+    margin-bottom: 25px;
+    
+    .question-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      
+      .question-type {
+        background: linear-gradient(135deg, #e6a23c, #d48813);
+        color: white;
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      
+      .question-score {
+        color: #e6a23c;
+        font-weight: 600;
+      }
+    }
+    
+    .question-title {
+      font-size: 16px;
+      line-height: 1.6;
+      color: #333;
+    }
+  }
+  
+  .judgment-options {
     display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-
-    .index-item {
-        display: inline-block;
-        padding: 3px 10px;
-        font-size: 16px;
-        color: rgb(113, 114, 114);
+    gap: 20px;
+    margin-bottom: 20px;
+    
+    .option {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 25px 20px;
+      border: 2px solid #e1e5eb;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      
+      &:hover {
+        border-color: #409eff;
+        background: #f0f5ff;
+      }
+      
+      &.selected {
+        border-color: #409eff;
+        background: #f0f5ff;
+        
+        .option-icon {
+          background: #409eff;
+          color: white;
+        }
+      }
+      
+      &.correct {
+        border-color: #67c23a;
+        background: #f0f9eb;
+        
+        .option-icon {
+          background: #67c23a;
+          color: white;
+        }
+      }
+      
+      &.wrong {
+        border-color: #f56c6c;
+        background: #fef0f0;
+        
+        .option-icon {
+          background: #f56c6c;
+          color: white;
+        }
+      }
+      
+      .option-icon {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        font-weight: bold;
+        background: #f5f7fa;
+        border-radius: 50%;
+        margin-bottom: 15px;
+        transition: all 0.3s;
+      }
+      
+      .option-text {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+      }
     }
-
-    .check-item {
-        display: inline-block;
-        width: 20px;
-        height: 20px;
-        border-radius: 10px;
-        padding: 3px;
-        box-sizing: border-box;
-        border: 3px solid rgb(232, 234, 243);
-        margin-right: 10px;
-        transition: .8s;
+  }
+  
+  .error-message {
+    color: #f56c6c;
+    font-size: 12px;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: #fef0f0;
+    border-radius: 4px;
+  }
+  
+  .explanation {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    
+    h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #909399;
     }
-
-    input {
-        padding: 5px 10px;
-        outline: none;
-        border: none;
-        font-size: 16px;
-        width: 80%;
+    
+    .explanation-content {
+      line-height: 1.6;
+      color: #333;
+      margin-bottom: 10px;
     }
+    
+    .correct-answer {
+      margin: 10px 0;
+      padding: 8px 12px;
+      background: white;
+      border-radius: 4px;
+      
+      .correct-text {
+        color: #67c23a;
+        font-weight: 600;
+      }
+      
+      .wrong-text {
+        color: #f56c6c;
+        font-weight: 600;
+      }
+    }
+    
+    .reference {
+      font-size: 12px;
+      color: #909399;
+      padding: 8px;
+      background: white;
+      border-radius: 4px;
+    }
+  }
+  
+  .knowledge-tags {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ebeef5;
+    
+    h4 {
+      margin: 0 0 10px 0;
+      font-size: 14px;
+      color: #909399;
+    }
+    
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      
+      .tag {
+        padding: 4px 12px;
+        background: #ecf5ff;
+        color: #409eff;
+        border-radius: 20px;
+        font-size: 12px;
+        
+        &:hover {
+          background: #409eff;
+          color: white;
+        }
+      }
+    }
+  }
+  
+  .statistics {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    
+    .stat-row {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 15px;
+      
+      .stat-item {
+        text-align: center;
+        
+        .stat-label {
+          font-size: 12px;
+          color: #909399;
+          margin-bottom: 4px;
+        }
+        
+        .stat-value {
+          font-size: 20px;
+          font-weight: 600;
+          color: #409eff;
+        }
+      }
+    }
+    
+    .stat-chart {
+      height: 30px;
+      display: flex;
+      border-radius: 15px;
+      overflow: hidden;
+      
+      .chart-bar {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 12px;
+        font-weight: 600;
+        transition: width 0.5s;
+        
+        &.true-bar {
+          background: #67c23a;
+        }
+        
+        &.false-bar {
+          background: #f56c6c;
+        }
+      }
+    }
+  }
 }
 </style>

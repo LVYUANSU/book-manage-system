@@ -1,39 +1,161 @@
-// 标签
-.theme-tag {
-    color: #1c1c1c;
-    background-color: rgb(237, 235, 235);
-    padding: 3px 10px;
-    border-radius: 3px;
-    font-size: 12px;
-    margin-right: 5px;
-}
+// dialog.scss - 对话框组件样式
+@import 'basic.scss';
 
-// 弹窗标题
-.dialog-title {
-    font-size: 16px;
-    padding: 15px 20px;
-    user-select: none;
-    color: rgb(107, 106, 106);
-}
-
-.dialog-avatar {
-    width: 98px;
-    height: 98px;
-}
-
-.dialog-input {
-    font-size: 30px;
-    font-weight: 600;
+.el-dialog {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: $color-white;
+  border-radius: $border-radius-base;
+  box-shadow: $box-shadow-light;
+  border: none;
+  z-index: $z-index-popper;
+  min-width: 300px;
+  max-width: 90%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  
+  &__wrapper {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: $z-index-popper - 100;
+  }
+  
+  &__header {
+    padding: 20px 20px 10px;
+    border-bottom: 1px solid $border-color-light;
+    
+    &-title {
+      font-size: $font-size-large;
+      color: $color-text-primary;
+      font-weight: $font-weight-bold;
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    &-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: $color-text-secondary;
+      
+      &:hover {
+        color: $color-primary;
+      }
+    }
+  }
+  
+  &__body {
+    padding: 30px 20px;
+    color: $color-text-regular;
+    font-size: $font-size-base;
+    flex: 1;
+    overflow-y: auto;
+    
+    &--centered {
+      text-align: center;
+    }
+  }
+  
+  &__footer {
+    padding: 10px 20px 20px;
+    border-top: 1px solid $border-color-light;
+    text-align: right;
+    
+    .el-button {
+      margin-left: $spacing-base;
+    }
+  }
+  
+  // 不同类型
+  &--center {
+    .el-dialog__body {
+      text-align: center;
+    }
+    
+    .el-dialog__footer {
+      text-align: center;
+    }
+  }
+  
+  // 全屏对话框
+  &--fullscreen {
     width: 100%;
-    border: 5px;
-    padding: 4px 5px;
-    border: none;
-    outline: none;
-    user-select: none;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  
+  // 动画
+  &-fade-enter-active {
+    animation: dialog-fade-in $transition-duration-slow;
+    
+    .el-dialog {
+      animation: dialog-zoom-in $transition-duration-slow;
+    }
+  }
+  
+  &-fade-leave-active {
+    animation: dialog-fade-out $transition-duration-slow;
+    
+    .el-dialog {
+      animation: dialog-zoom-out $transition-duration-slow;
+    }
+  }
 }
-.dialog-hover{
-    display: inline-block;
-    padding: 10px 6px;
-    font-size: 12px;
-    color: rgb(107, 106, 106);
+
+// 动画定义
+@keyframes dialog-fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dialog-fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes dialog-zoom-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes dialog-zoom-out {
+  0% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
 }

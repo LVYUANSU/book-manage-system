@@ -1,23 +1,109 @@
+// basic.scss - 基础样式变量和重置
+// 基础颜色变量
+$color-primary: #409EFF;
+$color-success: #67C23A;
+$color-warning: #E6A23C;
+$color-danger: #F56C6C;
+$color-info: #909399;
+
+// 中性色
+$color-white: #FFFFFF;
+$color-black: #000000;
+$color-text-primary: #303133;
+$color-text-regular: #606266;
+$color-text-secondary: #909399;
+$color-text-placeholder: #C0C4CC;
+
+// 边框颜色
+$border-color-base: #DCDFE6;
+$border-color-light: #E4E7ED;
+$border-color-lighter: #EBEEF5;
+$border-color-extra-light: #F2F6FC;
+
+// 背景色
+$background-color-base: #F5F7FA;
+
+// 字体
+$font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+  'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+$font-size-base: 14px;
+$font-size-small: 13px;
+$font-size-large: 16px;
+$font-weight-base: 500;
+$font-weight-bold: 600;
+
+// 边框
+$border-width-base: 1px;
+$border-style-base: solid;
+$border-base: $border-width-base $border-style-base $border-color-base;
+$border-radius-base: 4px;
+$border-radius-small: 2px;
+$border-radius-round: 20px;
+$border-radius-circle: 50%;
+
+// 阴影
+$box-shadow-base: 0 2px 4px rgba(0, 0, 0, 0.12), 0 0 6px rgba(0, 0, 0, 0.04);
+$box-shadow-light: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+
+// 间距
+$spacing-base: 8px;
+$spacing-small: $spacing-base * 0.5; // 4px
+$spacing-large: $spacing-base * 1.5; // 12px
+$spacing-xl: $spacing-base * 2; // 16px
+$spacing-xxl: $spacing-base * 3; // 24px
+
+// 响应式断点
+$breakpoint-xs: 480px;
+$breakpoint-sm: 768px;
+$breakpoint-md: 992px;
+$breakpoint-lg: 1200px;
+$breakpoint-xl: 1920px;
+
+// 动画
+$transition-duration-fast: 0.1s;
+$transition-duration-base: 0.2s;
+$transition-duration-slow: 0.3s;
+$transition-function-ease-in-out: ease-in-out;
+$transition-function-fast-bezier: cubic-bezier(0.23, 1, 0.32, 1);
+
+// Z-index 层级
+$z-index-normal: 1;
+$z-index-top: 1000;
+$z-index-popper: 2000;
+
+// 全局重置
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
-    margin: 0;
+  margin: 0;
+  padding: 0;
+  font-family: $font-family;
+  font-size: $font-size-base;
+  color: $color-text-primary;
+  background-color: $background-color-base;
+  line-height: 1.5;
 }
 
-.icon-r-edit:before {
-    content: "" !important;
+// 滚动条样式
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-.icon-r-no:before {
-    content: "" !important;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
 }
 
-.icon-r-yes:before {
-    content: "" !important;
-}
-
-.icon-r-delete:before {
-    content: "" !important;
-}
-
-.icon-r-add:before {
-    content: "" !important;
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+  
+  &:hover {
+    background: #a8a8a8;
+  }
 }

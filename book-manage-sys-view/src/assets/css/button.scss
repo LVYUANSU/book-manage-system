@@ -1,65 +1,214 @@
-// 编辑按钮
-.edit-button{
-    background-color: rgb(56, 183, 129);
+// button.scss - 按钮组件样式
+@import 'basic.scss';
+
+.el-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: 32px;
+  white-space: nowrap;
+  cursor: pointer;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  transition: all $transition-duration-base;
+  user-select: none;
+  font-weight: $font-weight-base;
+  border: $border-base;
+  border-color: $border-color-base;
+  color: $color-text-regular;
+  background-color: $color-white;
+  padding: 8px 15px;
+  font-size: $font-size-base;
+  border-radius: $border-radius-base;
+  margin: 0 $spacing-small;
+  
+  // 按钮大小
+  &--large {
+    height: 40px;
+    padding: 10px 19px;
+    font-size: $font-size-large;
+  }
+  
+  &--small {
+    height: 28px;
+    padding: 5px 11px;
+    font-size: $font-size-small;
+  }
+  
+  &--mini {
+    height: 24px;
+    padding: 3px 7px;
     font-size: 12px;
-    padding: 2px 15px;
-    border-radius: 3px;
-    height: 25px;
-    line-height: 25px;
-    display: inline-block;
-    user-select: none;
-    cursor: pointer;
-    color: #FFFFFF;
-    margin-right: 6px;
-}
-
-.edit-button:hover{
-    background-color: rgb(25, 136, 88);
-    color: #FFFFFF;
-}
-
-// 取消按钮
-.channel-button{
-    background-color: rgb(245, 245, 245);
-    font-size: 12px;
-    padding: 2px 15px;
-    height: 25px;
-    line-height: 25px;
-    border-radius: 3px;
-    display: inline-block;
-    user-select: none;
-    cursor: pointer;
-    color: #1c1c1c;
-    margin:  0 10px;
-}
-
-.channel-button:hover{
-    color: #304a99;
-}
-
-// 文字按钮
-.text-button{
-    margin-right: 10px;
-    color: rgb(43, 121, 203);
-    cursor: pointer;
-}
-
-// 删除按钮
-.delete-button{
-    background-color: rgb(241, 241, 241);
-    font-size: 12px;
-    padding: 2px 15px;
-    height: 25px;
-    line-height: 25px;
-    border-radius: 3px;
-    display: inline-block;
-    user-select: none;
-    cursor: pointer;
-    color: #1c1c1c;
-}
-
-.delete-button:hover{
-    background-color: rgb(167, 83, 90);
-    font-size: 12px;
-    color: #FFFFFF;
+  }
+  
+  // 按钮类型
+  &--primary {
+    color: $color-white;
+    background-color: $color-primary;
+    border-color: $color-primary;
+    
+    &:hover,
+    &:focus {
+      background-color: mix($color-white, $color-primary, 20%);
+      border-color: mix($color-white, $color-primary, 20%);
+    }
+    
+    &:active {
+      background-color: mix($color-black, $color-primary, 10%);
+      border-color: mix($color-black, $color-primary, 10%);
+    }
+  }
+  
+  &--success {
+    color: $color-white;
+    background-color: $color-success;
+    border-color: $color-success;
+    
+    &:hover,
+    &:focus {
+      background-color: mix($color-white, $color-success, 20%);
+      border-color: mix($color-white, $color-success, 20%);
+    }
+  }
+  
+  &--warning {
+    color: $color-white;
+    background-color: $color-warning;
+    border-color: $color-warning;
+    
+    &:hover,
+    &:focus {
+      background-color: mix($color-white, $color-warning, 20%);
+      border-color: mix($color-white, $color-warning, 20%);
+    }
+  }
+  
+  &--danger {
+    color: $color-white;
+    background-color: $color-danger;
+    border-color: $color-danger;
+    
+    &:hover,
+    &:focus {
+      background-color: mix($color-white, $color-danger, 20%);
+      border-color: mix($color-white, $color-danger, 20%);
+    }
+  }
+  
+  &--info {
+    color: $color-white;
+    background-color: $color-info;
+    border-color: $color-info;
+    
+    &:hover,
+    &:focus {
+      background-color: mix($color-white, $color-info, 20%);
+      border-color: mix($color-white, $color-info, 20%);
+    }
+  }
+  
+  // 朴素按钮
+  &--plain {
+    &.el-button--primary {
+      color: $color-primary;
+      background-color: mix($color-white, $color-primary, 90%);
+      border-color: mix($color-white, $color-primary, 60%);
+    }
+    
+    &.el-button--success {
+      color: $color-success;
+      background-color: mix($color-white, $color-success, 90%);
+      border-color: mix($color-white, $color-success, 60%);
+    }
+    
+    &.el-button--warning {
+      color: $color-warning;
+      background-color: mix($color-white, $color-warning, 90%);
+      border-color: mix($color-white, $color-warning, 60%);
+    }
+    
+    &.el-button--danger {
+      color: $color-danger;
+      background-color: mix($color-white, $color-danger, 90%);
+      border-color: mix($color-white, $color-danger, 60%);
+    }
+    
+    &.el-button--info {
+      color: $color-info;
+      background-color: mix($color-white, $color-info, 90%);
+      border-color: mix($color-white, $color-info, 60%);
+    }
+  }
+  
+  // 圆角按钮
+  &--round {
+    border-radius: $border-radius-round;
+  }
+  
+  // 圆形按钮
+  &--circle {
+    border-radius: $border-radius-circle;
+    padding: 8px;
+  }
+  
+  // 禁用状态
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    
+    &:hover,
+    &:focus {
+      background-color: initial;
+      border-color: initial;
+    }
+  }
+  
+  // 加载状态
+  &.is-loading {
+    position: relative;
+    pointer-events: none;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      left: -1px;
+      top: -1px;
+      right: -1px;
+      bottom: -1px;
+      border-radius: inherit;
+      background-color: rgba(255, 255, 255, 0.35);
+    }
+  }
+  
+  // 图标按钮
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 5px;
+  }
+  
+  // 按钮组
+  &-group {
+    display: inline-flex;
+    
+    .el-button {
+      margin: 0;
+      border-radius: 0;
+      border-right-width: 0;
+      
+      &:first-child {
+        border-top-left-radius: $border-radius-base;
+        border-bottom-left-radius: $border-radius-base;
+      }
+      
+      &:last-child {
+        border-top-right-radius: $border-radius-base;
+        border-bottom-right-radius: $border-radius-base;
+        border-right-width: 1px;
+      }
+    }
+  }
 }

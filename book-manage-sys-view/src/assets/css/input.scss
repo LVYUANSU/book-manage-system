@@ -1,25 +1,297 @@
-// 输入框
-.input-title {
+// input.scss - 输入框组件样式
+@import 'basic.scss';
+
+.el-input {
+  position: relative;
+  font-size: $font-size-base;
+  display: inline-block;
+  width: 100%;
+  
+  &__wrapper {
+    display: inline-flex;
+    align-items: center;
     width: 100%;
+    border: $border-base;
+    border-radius: $border-radius-base;
+    background-color: $color-white;
+    transition: border-color $transition-duration-base;
+    
+    &:hover {
+      border-color: $border-color-light;
+    }
+    
+    &.is-focused {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
+    }
+  }
+  
+  &__inner {
+    flex: 1;
     border: none;
     outline: none;
-    padding: 5px 10px;
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.top-bar {
-    display: inline-block;
-    margin: 0 10px;
-    font-size: 14px;
-    color: #909399;
-}
-
-.input-child {
+    background: none;
+    padding: 8px 12px;
+    font-size: inherit;
+    color: $color-text-regular;
+    min-width: 0;
+    height: 32px;
+    
+    &::placeholder {
+      color: $color-text-placeholder;
+    }
+  }
+  
+  // 前置内容
+  &__prefix {
+    display: flex;
+    align-items: center;
+    padding-left: 12px;
+    color: $color-text-secondary;
+    cursor: pointer;
+    
+    &-icon {
+      font-size: $font-size-base;
+    }
+  }
+  
+  // 后置内容
+  &__suffix {
+    display: flex;
+    align-items: center;
+    padding-right: 12px;
+    color: $color-text-secondary;
+    
+    &-icon {
+      font-size: $font-size-base;
+      cursor: pointer;
+      
+      &:hover {
+        color: $color-text-regular;
+      }
+    }
+  }
+  
+  // 清除按钮
+  &__clear {
+    cursor: pointer;
+    color: $color-text-placeholder;
+    
+    &:hover {
+      color: $color-text-secondary;
+    }
+  }
+  
+  // 大小
+  &--large {
+    .el-input__wrapper {
+      height: 40px;
+    }
+    
+    .el-input__inner {
+      height: 40px;
+      padding: 10px 15px;
+      font-size: $font-size-large;
+    }
+  }
+  
+  &--small {
+    .el-input__wrapper {
+      height: 28px;
+    }
+    
+    .el-input__inner {
+      height: 28px;
+      padding: 5px 10px;
+      font-size: $font-size-small;
+    }
+  }
+  
+  &--mini {
+    .el-input__wrapper {
+      height: 24px;
+    }
+    
+    .el-input__inner {
+      height: 24px;
+      padding: 3px 7px;
+      font-size: 12px;
+    }
+  }
+  
+  // 状态
+  &.is-disabled {
+    .el-input__wrapper {
+      background-color: $background-color-base;
+      border-color: $border-color-lighter;
+      cursor: not-allowed;
+    }
+    
+    .el-input__inner {
+      color: $color-text-placeholder;
+      cursor: not-allowed;
+    }
+  }
+  
+  &.is-error {
+    .el-input__wrapper {
+      border-color: $color-danger;
+      
+      &.is-focused {
+        box-shadow: 0 0 0 2px rgba($color-danger, 0.1);
+      }
+    }
+  }
+  
+  // 组
+  &-group {
+    display: inline-flex;
     width: 100%;
-    border: none;
-    outline: none;
-    padding: 5px 10px;
-    font-size: 22px;
-    font-weight: bold;
+    align-items: stretch;
+    
+    &__append,
+    &__prepend {
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      background-color: $background-color-base;
+      color: $color-text-regular;
+      border: $border-base;
+      white-space: nowrap;
+    }
+    
+    &__prepend {
+      border-right: 0;
+      border-top-left-radius: $border-radius-base;
+      border-bottom-left-radius: $border-radius-base;
+    }
+    
+    &__append {
+      border-left: 0;
+      border-top-right-radius: $border-radius-base;
+      border-bottom-right-radius: $border-radius-base;
+    }
+    
+    .el-input__wrapper {
+      border-radius: 0;
+      flex: 1;
+      
+      &:not(:first-child) {
+        border-left: 0;
+      }
+      
+      &:not(:last-child) {
+        border-right: 0;
+      }
+    }
+    
+    // 带有前置后置的输入框
+    &:not(.is-prepend) {
+      .el-input__wrapper:first-child {
+        border-top-left-radius: $border-radius-base;
+        border-bottom-left-radius: $border-radius-base;
+      }
+    }
+    
+    &:not(.is-append) {
+      .el-input__wrapper:last-child {
+        border-top-right-radius: $border-radius-base;
+        border-bottom-right-radius: $border-radius-base;
+      }
+    }
+  }
+}
+
+// 文本域
+.el-textarea {
+  display: inline-block;
+  width: 100%;
+  vertical-align: bottom;
+  font-size: $font-size-base;
+  
+  &__inner {
+    display: block;
+    resize: vertical;
+    padding: 8px 12px;
+    line-height: 1.5;
+    box-sizing: border-box;
+    width: 100%;
+    font-size: inherit;
+    color: $color-text-regular;
+    background-color: $color-white;
+    background-image: none;
+    border: $border-base;
+    border-radius: $border-radius-base;
+    transition: border-color $transition-duration-base;
+    
+    &::placeholder {
+      color: $color-text-placeholder;
+    }
+    
+    &:hover {
+      border-color: $border-color-light;
+    }
+    
+    &:focus {
+      outline: none;
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba($color-primary, 0.1);
+    }
+  }
+  
+  // 大小
+  &--large {
+    .el-textarea__inner {
+      padding: 10px 15px;
+      font-size: $font-size-large;
+    }
+  }
+  
+  &--small {
+    .el-textarea__inner {
+      padding: 5px 10px;
+      font-size: $font-size-small;
+    }
+  }
+  
+  &--mini {
+    .el-textarea__inner {
+      padding: 3px 7px;
+      font-size: 12px;
+    }
+  }
+  
+  // 状态
+  &.is-disabled {
+    .el-textarea__inner {
+      background-color: $background-color-base;
+      border-color: $border-color-lighter;
+      color: $color-text-placeholder;
+      cursor: not-allowed;
+      
+      &::placeholder {
+        color: mix($color-text-placeholder, $background-color-base, 50%);
+      }
+    }
+  }
+  
+  &.is-error {
+    .el-textarea__inner {
+      border-color: $color-danger;
+      
+      &:focus {
+        box-shadow: 0 0 0 2px rgba($color-danger, 0.1);
+      }
+    }
+  }
+  
+  // 字数统计
+  &__count {
+    color: $color-text-secondary;
+    background: $color-white;
+    position: absolute;
+    font-size: $font-size-small;
+    bottom: 5px;
+    right: 10px;
+  }
 }
