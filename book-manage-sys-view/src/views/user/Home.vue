@@ -1,254 +1,463 @@
 <template>
-    <div class="menu-container">
-        <div class="menu-side" :class="{ 'menu-side-narrow': flag }">
-            <div style="display: flex;align-items: center;">
-                <Logo name="图书管理" style="padding: 0 40px;margin: 15px 0;" :flag="flag" :bag="colorLogo" />
-            </div>
-            <div style="margin-top: 12px;">
-                <AdminMenu :flag="flag" :routes="adminRoutes" :bag="bagMenu" @select="handleRouteSelect" />
-            </div>
+  <div class="main-layout">
+    <!-- 侧边栏 -->
+    <aside class="sidebar" :class="{ collapsed: isCollapsed }">
+      <div class="sidebar-header">
+        <h2 class="logo" @click="toggleSidebar">
+          📚 {{ isCollapsed ? '图书' : '智慧图书管理系统' }}
+        </h2>
+        <button class="toggle-btn" @click="toggleSidebar">
+          {{ isCollapsed ? '→' : '←' }}
+        </button>
+      </div>
+      
+      <nav class="nav-menu">
+        <div class="user-profile">
+          <img :src="userAvatar" alt="用户头像" class="profile-avatar">
+          <div v-if="!isCollapsed" class="profile-info">
+            <h4>{{ username }}</h4>
+            <p>管理员</p>
+          </div>
         </div>
-        <div class="main">
-            <div class="header-section">
-                <LevelHeader @eventListener="eventListener" @selectOperation="selectOperation" :tag="tag"
-                    :userInfo="userInfo" />
-            </div>
-            <div class="content-section">
-                <router-view></router-view>
-            </div>
-        </div>
-        <!-- 个人中心 -->
-        <el-dialog :show-close="false" :visible.sync="dialogOperaion" width="26%">
-            <div slot="title" style="padding: 25px 0 0 20px;">
-                <span style="font-size: 18px;font-weight: 800;">个人中心</span>
-            </div>
-            <el-row style="padding: 10px 20px 20px 20px;">
-                <el-row>
-                    <p style="font-size: 12px;padding: 3px 0;margin-bottom: 10px;">
-                        <span class="modelName">*头像</span>
-                    </p>
-                    <el-upload class="avatar-uploader" action="/api/book-manage-sys-api/v1.0/file/upload"
-                        :show-file-list="false" :on-success="handleAvatarSuccess">
-                        <img v-if="userInfo.url" :src="userInfo.url" style="width: 80px;height: 80px;">
-                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                    </el-upload>
-                </el-row>
-                <el-row>
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*用户名</span>
-                    </p>
-                    <input class="input-title" v-model="userInfo.name" placeholder="用户名">
-                </el-row>
-                <el-row>
-                    <p style="font-size: 12px;padding: 3px 0;">
-                        <span class="modelName">*用户邮箱</span>
-                    </p>
-                    <input class="input-title" v-model="userInfo.email" placeholder="用户邮箱">
-                </el-row>
-            </el-row>
-            <span slot="footer" class="dialog-footer">
-                <el-button class="customer" size="small" style="background-color: rgb(241, 241, 241);border: none;"
-                    @click="dialogOperaion = false">取 消</el-button>
-                <el-button size="small" style="background-color: #15559a;border: none;" class="customer" type="info"
-                    @click="updateUserInfo">修改</el-button>
+        
+        <ul class="menu-list">
+          <li 
+            v-for="item in menuItems" 
+            :key="item.path"
+            :class="{ active: activeMenu === item.path }"
+            @click="navigateTo(item.path)"
+          >
+            <span class="menu-icon">{{ item.icon }}</span>
+            <span v-if="!isCollapsed" class="menu-text">{{ item.text }}</span>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+      <!-- 顶部工具栏 -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <div class="breadcrumb">
+            <span v-for="(crumb, index) in breadcrumbs" :key="index">
+              <span v-if="index > 0"> / </span>
+              <span :class="{ active: index === breadcrumbs.length - 1 }">
+                {{ crumb }}
+              </span>
             </span>
-        </el-dialog>
+          </div>
+        </div>
+        
+        <div class="topbar-right">
+          <div class="search-box">
+            <input 
+              type="text" 
+              v-model="searchQuery"
+              placeholder="搜索图书、作者..."
+              @keyup.enter="handleSearch"
+            >
+            <button class="search-btn" @click="handleSearch">🔍</button>
+          </div>
+          
+          <div class="toolbar-actions">
+            <button class="action-btn" @click="refreshPage">🔄</button>
+            <button class="action-btn" @click="showNotifications">
+              🔔<span class="badge" v-if="notificationCount > 0">{{ notificationCount }}</span>
+            </button>
+            <button class="action-btn logout-btn" @click="logout">🚪</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- 路由视图区域 -->
+      <div class="content-view">
+        <router-view />
+      </div>
     </div>
+  </div>
 </template>
-<script>
-import request from "@/utils/request.js";
-import router from "@/router/index";
-import { clearToken } from "@/utils/storage"
-import AdminMenu from '@/components/VerticalMenu.vue';
-import Logo from '@/components/Logo.vue';
-import LevelHeader from '@/components/LevelHeader.vue';
-export default {
-    name: "Admin",
-    components: {
-        Logo,
-        LevelHeader,
-        AdminMenu
-    },
-    data() {
-        return {
-            adminRoutes: [],
-            activeIndex: '',
-            userInfo: {
-                id: null,
-                url: '',
-                name: '',
-                role: null,
-                email: ''
-            },
-            flag: false,
-            tag: '可视化',
-            bag: 'rgb(250, 250, 250)',
-            colorLogo: '#1c1c1c',
-            bagMenu: 'rgb(250, 250, 250)',
-            dialogOperaion: false
-        };
-    },
-    created() {
-        let menus = router.options.routes.filter(route => route.path == '/user')[0];
-        this.adminRoutes = menus.children;
-        this.tokenCheckLoad();
-        this.menuOperationHistory();
-    },
 
-    methods: {
-        async updateUserInfo() {
-            try {
-                const userUpdateDTO = {
-                    userAvatar: this.userInfo.url,
-                    userName: this.userInfo.name,
-                    userEmail: this.userInfo.email
-                }
-                const resposne = await this.$axios.put(`/user/update`, userUpdateDTO);
-                const { data } = resposne;
-                if (data.code === 200) {
-                    this.dialogOperaion = false;
-                    this.tokenCheckLoad();
-                    this.$swal.fire({
-                        title: '修改个人信息',
-                        text: data.msg,
-                        icon: 'success',
-                        showConfirmButton: false,
-                        timer: 1000,
-                    });
-                }
-            } catch (e) {
-                this.dialogOperaion = false;
-                this.$swal.fire({
-                    title: '修改个人信息异常',
-                    text: e,
-                    icon: 'error',
-                    showConfirmButton: false,
-                    timer: 2000,
-                });
-                console.error(`修改个人信息异常:${e}`);
-            }
-        },
-        handleAvatarSuccess(res, file) {
-            if (res.code !== 200) {
-                this.$message.error(`头像上传异常`);
-                return;
-            }
-            this.$message.success(`头像上传成功`);
-            this.userInfo.url = res.data;
-        },
-        eventListener(event) {
-            // 个人中心
-            if (event === 'center') {
-                this.dialogOperaion = true;
-            }
-            // 退出登录
-            if (event === 'loginOut') {
-                this.loginOut();
-            }
-        },
-        async loginOut() {
-            const confirmed = await this.$swalConfirm({
-                title: '退出登录？',
-                text: `推出后需重新登录？`,
-                icon: 'warning',
-            });
-            if (confirmed) {
-                this.$swal.fire({
-                    title: '退出登录成功',
-                    text: '1s 后返回登录页面',
-                    icon: 'success',
-                    showConfirmButton: false,
-                    timer: 1000,
-                });
-                setTimeout(() => {
-                    clearToken();
-                    this.$router.push("/login");
-                }, 1000)
-            }
-        },
-        menuOperationHistory() {
-            this.flag = sessionStorage.getItem('flag') === 'true';
-        },
-        selectOperation(flag) {
-            this.flag = flag;
-        },
-        handleRouteSelect(index) {
-            let ary = this.adminRoutes.filter(entity => entity.path == index);
-            this.tag = ary[0].name;
-            if (this.$router.currentRoute.fullPath == index) {
-                return;
-            }
-            this.$router.push(index);
-        },
-        // Token检验
-        async tokenCheckLoad() {
-            try {
-                const res = await request.get('user/auth');
-                // 错误处理
-                if (res.data.code === 400) {
-                    this.$message.error(res.data.msg);
-                    this.$router.push('/login');
-                    return;
-                }
-                // 用户信息赋值
-                const { id, userAvatar: url, userName: name, userRole: role, userEmail: email } = res.data.data;
-                this.userInfo = { id, url, name, role, email };
-                // 根据角色解析路由
-                const rolePath = role === 1 ? '/admin' : '/user';
-                const targetMenu = router.options.routes.find(route => route.path === rolePath);
-                if (targetMenu) {
-                    this.routers = targetMenu.children;
-                } else {
-                    console.warn(`未找到与角色对应的路由：${rolePath}`);
-                }
-            } catch (error) {
-                console.error('获取用户认证信息时发生错误:', error);
-                this.$message.error('认证信息加载失败，请重试！');
-            }
-        },
-    }
-};
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+
+const router = useRouter()
+const route = useRoute()
+
+// 侧边栏状态
+const isCollapsed = ref(false)
+
+// 用户信息
+const username = ref('管理员')
+const userAvatar = ref('https://via.placeholder.com/40')
+
+// 搜索相关
+const searchQuery = ref('')
+
+// 通知数量
+const notificationCount = ref(3)
+
+// 菜单项配置
+const menuItems = ref([
+  { icon: '🏠', text: '首页', path: '/home' },
+  { icon: '📚', text: '图书管理', path: '/books' },
+  { icon: '👥', text: '会员管理', path: '/members' },
+  { icon: '📖', text: '借阅管理', path: '/borrow' },
+  { icon: '📊', text: '数据统计', path: '/stats' },
+  { icon: '⚙️', text: '系统设置', path: '/settings' },
+  { icon: '❓', text: '帮助中心', path: '/help' }
+])
+
+// 计算面包屑
+const breadcrumbs = computed(() => {
+  const path = route.path
+  const parts = path.split('/').filter(p => p)
+  
+  if (parts.length === 0) return ['首页']
+  
+  return parts.map(part => {
+    const item = menuItems.value.find(item => 
+      item.path.slice(1) === part || item.path === path
+    )
+    return item ? item.text : part
+  })
+})
+
+// 当前激活菜单
+const activeMenu = computed(() => route.path)
+
+// 切换侧边栏
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value
+}
+
+// 导航到页面
+const navigateTo = (path) => {
+  router.push(path)
+}
+
+// 搜索处理
+const handleSearch = () => {
+  if (searchQuery.value.trim()) {
+    alert(`搜索: ${searchQuery.value}`)
+    // router.push(`/search?q=${searchQuery.value}`)
+    searchQuery.value = ''
+  }
+}
+
+// 刷新页面
+const refreshPage = () => {
+  window.location.reload()
+}
+
+// 显示通知
+const showNotifications = () => {
+  alert(`您有 ${notificationCount.value} 条新通知`)
+  notificationCount.value = 0
+}
+
+// 退出登录
+const logout = () => {
+  if (confirm('确定要退出登录吗？')) {
+    localStorage.removeItem('token')
+    router.push('/login')
+  }
+}
+
+// 初始化
+onMounted(() => {
+  const savedUser = localStorage.getItem('user')
+  if (savedUser) {
+    username.value = savedUser
+  }
+})
 </script>
-<style scoped lang="scss">
-.menu-container {
-    display: flex;
+
+<style scoped>
+.main-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f7fa;
+}
+
+/* 侧边栏 */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+  color: white;
+  transition: width 0.3s;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+.sidebar-header {
+  padding: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 18px;
+  margin: 0;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* 用户资料 */
+.user-profile {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 2px solid #6a11cb;
+}
+
+.profile-info h4 {
+  margin: 0 0 5px 0;
+  font-size: 16px;
+}
+
+.profile-info p {
+  margin: 0;
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.sidebar.collapsed .profile-info {
+  display: none;
+}
+
+/* 菜单列表 */
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-list li {
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.3s;
+  border-left: 4px solid transparent;
+}
+
+.menu-list li:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.menu-list li.active {
+  background: rgba(106, 17, 203, 0.2);
+  border-left-color: #6a11cb;
+}
+
+.menu-icon {
+  font-size: 20px;
+  margin-right: 15px;
+  width: 24px;
+  text-align: center;
+}
+
+.menu-text {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .menu-text {
+  display: none;
+}
+
+/* 主内容区 */
+.main-content {
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 顶部工具栏 */
+.topbar {
+  background: white;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+}
+
+.breadcrumb {
+  font-size: 14px;
+  color: #666;
+}
+
+.breadcrumb .active {
+  color: #6a11cb;
+  font-weight: 500;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 5px 10px;
+  margin-right: 20px;
+}
+
+.search-box input {
+  border: none;
+  background: transparent;
+  padding: 8px;
+  width: 200px;
+  font-size: 14px;
+  outline: none;
+}
+
+.search-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  color: #666;
+  padding: 5px;
+}
+
+.toolbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.action-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.action-btn:hover {
+  background: #f5f7fa;
+  border-color: #6a11cb;
+}
+
+.badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4757;
+  color: white;
+  font-size: 12px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logout-btn {
+  background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
+  color: white;
+  border: none;
+}
+
+/* 内容区域 */
+.content-view {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+}
+
+/* 响应式 */
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 70px;
+  }
+  
+  .sidebar:not(.collapsed) {
+    width: 250px;
+    position: fixed;
+    z-index: 1000;
     height: 100vh;
+  }
+  
+  .search-box input {
+    width: 150px;
+  }
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px;
+  }
+  
+  .topbar-left, .topbar-right {
     width: 100%;
-
-
-    .menu-side {
-        width: 253px;
-        min-width: 95px;
-        height: 100vh;
-        padding-top: 10px;
-        box-sizing: border-box;
-        transition: width 0.3s ease;
-        background-color: rgb(250, 250, 250);
-    }
-
-    .menu-side-narrow {
-        width: 115px;
-    }
-
-    .main {
-        flex-grow: 1;
-        overflow-x: hidden;
-
-        .header-section {
-            max-width: 100%;
-            padding: 0 15px 0 0;
-        }
-
-        .content-section {
-            overflow-x: hidden;
-            flex-grow: 1;
-            padding: 0 15px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-    }
-
-
-
+  }
+  
+  .breadcrumb {
+    margin-bottom: 10px;
+  }
+  
+  .search-box {
+    margin-right: 0;
+    flex: 1;
+  }
+  
+  .search-box input {
+    width: 100%;
+  }
+  
+  .content-view {
+    padding: 20px;
+  }
 }
 </style>
