@@ -1,176 +1,379 @@
 <template>
-    <el-row style="background-color: #FFFFFF;padding: 10px 0;border-radius: 5px;">
-        <el-row style="padding: 10px;">
-            <el-row>
-                <span class="top-bar">公告标题</span>
-                <el-input size="small" style="width: 188px;" v-model="noticeQueryDto.name" placeholder="输入处" clearable
-                    @clear="handleFilterClear">
-                </el-input>
-                <span class="top-bar">发布时间</span>
-                <el-date-picker size="small" style="margin-left: 10px;width: 220px;" v-model="searchTime"
-                    type="daterange" range-separator="至" start-placeholder="开始时间" end-placeholder="结束时间">
-                </el-date-picker>
-                <el-button size="small" class="customer"
-                    style="margin-left: 10px;background-color: rgb(235, 237, 245);color: rgb(43, 121, 203);border: none;" type="primary"
-                    @click="handleFilter">立即查询</el-button>
-                <el-button size="small"
-                    style="background-color: rgb(235, 237, 245);color: rgb(43, 121, 203);border: none;" class="customer"
-                    type="info" @click="addNotice">新增公告</el-button>
-                <el-button size="small" class="customer reset"
-                    style="background-color: #f1f1f1;border: none;color: #909399;border: 1px solid #f1f1f1;" type="info"
-                    @click="resetQueryCondition">条件重置</el-button>
-                <el-button size="small" class="customer"
-                    :style="{ marginLeft: '10px', backgroundColor: selectedRows.length ? '#a7535a' : '#F1F1F1', border: 'none', color: selectedRows.length ? '#FFFFFF' : '#909399' }"
-                    type="danger" @click="batchDelete()">批量删除</el-button>
-            </el-row>
-        </el-row>
-        <el-row style="margin: 10px;">
-            <el-table row-key="id" @selection-change="handleSelectionChange" :data="tableData" style="width: 100%">
-                <el-table-column type="selection" width="55"></el-table-column>
-                <el-table-column prop="name" width="508" label="公告"></el-table-column>
-                <el-table-column prop="createTime" width="188" label="发布时间"></el-table-column>
-                <el-table-column label="操作">
-                    <template slot-scope="scope">
-                        <span class="text-button" @click="handleEdit(scope.row)">修改</span>
-                        <span class="text-button" @click="handleDelete(scope.row)">删除</span>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <el-pagination style="margin: 20px 0;float: right;" @size-change="handleSizeChange"
-                @current-change="handleCurrentChange" :current-page="currentPage" :page-sizes="[8, 20]"
-                :page-size="pageSize" layout="total, sizes, prev, pager, next, jumper"
-                :total="totalItems"></el-pagination>
-        </el-row>
-    </el-row>
+  <div class="notice-management">
+    <div class="page-header">
+      <h2>📢 通知管理</h2>
+      <div class="header-actions">
+        <button @click="createNotice" class="btn-primary">+ 创建通知</button>
+      </div>
+    </div>
+
+    <!-- 通知列表 -->
+    <div class="notice-list">
+      <div v-for="notice in notices" :key="notice.id" class="notice-item">
+        <div class="notice-header">
+          <h3>{{ notice.title }}</h3>
+          <span class="notice-type" :class="notice.type">
+            {{ notice.type }}
+          </span>
+        </div>
+        
+        <p class="notice-content">{{ notice.content }}</p>
+        
+        <div class="notice-footer">
+          <span class="notice-author">发布者：{{ notice.author }}</span>
+          <span class="notice-time">{{ notice.time }}</span>
+          <div class="notice-actions">
+            <button @click="editNotice(notice)" class="btn-edit">编辑</button>
+            <button @click="deleteNotice(notice)" class="btn-delete">删除</button>
+            <button 
+              @click="toggleStatus(notice)" 
+              :class="notice.status === 'published' ? 'btn-unpublish' : 'btn-publish'"
+            >
+              {{ notice.status === 'published' ? '取消发布' : '发布' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 创建/编辑通知模态框 -->
+    <div v-if="showModal" class="modal-overlay" @click="closeModal">
+      <div class="modal-content" @click.stop>
+        <h3>{{ editingNotice ? '编辑通知' : '创建通知' }}</h3>
+        
+        <form @submit.prevent="saveNotice">
+          <div class="form-group">
+            <label>标题</label>
+            <input type="text" v-model="formData.title" required>
+          </div>
+          
+          <div class="form-group">
+            <label>内容</label>
+            <textarea v-model="formData.content" rows="5" required></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label>类型</label>
+            <select v-model="formData.type">
+              <option value="normal">普通通知</option>
+              <option value="important">重要通知</option>
+              <option value="urgent">紧急通知</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>状态</label>
+            <select v-model="formData.status">
+              <option value="draft">草稿</option>
+              <option value="published">已发布</option>
+            </select>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" @click="closeModal" class="btn-cancel">取消</button>
+            <button type="submit" class="btn-save">保存</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 </template>
 
-<script>
-export default {
-    data() {
-        return {
-            data: {},
-            filterText: '',
-            currentPage: 1,
-            pageSize: 8,
-            totalItems: 0,
-            tableData: [],
-            searchTime: [],
-            selectedRows: [],
-            noticeQueryDto: {},
-        };
+<script setup>
+import { ref, onMounted } from 'vue'
+
+// 数据
+const notices = ref([])
+const showModal = ref(false)
+const editingNotice = ref(null)
+
+// 表单数据
+const formData = ref({
+  id: '',
+  title: '',
+  content: '',
+  type: 'normal',
+  status: 'draft'
+})
+
+// 方法
+const loadNotices = () => {
+  // 模拟数据
+  notices.value = [
+    { 
+      id: 1, 
+      title: '系统维护通知', 
+      content: '将于今晚24:00进行系统维护，预计持续2小时。', 
+      type: 'important', 
+      author: '管理员', 
+      time: '2024-01-15 10:30',
+      status: 'published'
     },
-    created() {
-        this.fetchFreshData();
-    },
-    methods: {
-        // 公告新增
-        addNotice() {
-            sessionStorage.setItem('noticeOperation', 'save');
-            this.$router.push('/createNotice');
-        },
-        // 多选框选中
-        handleSelectionChange(selection) {
-            this.selectedRows = selection;
-        },
-        // 批量删除数据
-        async batchDelete() {
-            if (!this.selectedRows.length) {
-                this.$message(`未选中任何数据`);
-                return;
-            }
-            const confirmed = await this.$swalConfirm({
-                title: '删除公告数据',
-                text: `删除后不可恢复，是否继续？`,
-                icon: 'warning',
-            });
-            if (confirmed) {
-                try {
-                    let ids = this.selectedRows.map(entity => entity.id);
-                    const response = await this.$axios.post(`notice/batchDelete`, ids);
-                    if (response.data.code === 200) {
-                        this.$swal.fire({
-                            title: '删除提示',
-                            text: response.data.msg,
-                            icon: 'success',
-                            showConfirmButton: false,
-                            timer: 2000,
-                        });
-                        this.fetchFreshData();
-                        return;
-                    }
-                } catch (e) {
-                    this.$swal.fire({
-                        title: '错误提示',
-                        text: e,
-                        icon: 'error',
-                        showConfirmButton: false,
-                        timer: 2000,
-                    });
-                    console.error(`公告信息删除异常：`, e);
-                }
-            }
-        },
-        resetQueryCondition() {
-            this.noticeQueryDto = {};
-            this.searchTime = [];
-            this.fetchFreshData();
-        },
-        clearFormData() {
-            this.data = {};
-        },
-        async fetchFreshData() {
-            try {
-                this.tableData = [];
-                let startTime = null;
-                let endTime = null;
-                if (this.searchTime != null && this.searchTime.length === 2) {
-                    const [startDate, endDate] = await Promise.all(this.searchTime.map(date => date.toISOString()));
-                    startTime = `${startDate.split('T')[0]}T00:00:00`;
-                    endTime = `${endDate.split('T')[0]}T23:59:59`;
-                }
-                // 请求参数
-                const params = {
-                    current: this.currentPage,
-                    size: this.pageSize,
-                    startTime: startTime,
-                    endTime: endTime,
-                    ...this.noticeQueryDto
-                };
-                const response = await this.$axios.post('notice/query', params);
-                const { data } = response;
-                this.tableData = data.data;
-                this.totalItems = data.total;
-            } catch (error) {
-                console.error('查询公告信息异常:', error);
-            }
-        },
-        handleFilter() {
-            this.currentPage = 1;
-            this.fetchFreshData();
-        },
-        handleFilterClear() {
-            this.filterText = '';
-            this.handleFilter();
-        },
-        handleSizeChange(val) {
-            this.pageSize = val;
-            this.currentPage = 1;
-            this.fetchFreshData();
-        },
-        handleCurrentChange(val) {
-            this.currentPage = val;
-            this.fetchFreshData();
-        },
-        handleEdit(row) {
-            sessionStorage.setItem('noticeInfo', JSON.stringify(row));
-            sessionStorage.setItem('noticeOperation', 'update');
-            this.$router.push('/createNotice');
-        },
-        handleDelete(row) {
-            this.selectedRows.push(row);
-            this.batchDelete();
-        }
-    },
-};
+    { 
+      id: 2, 
+      title: '新功能上线', 
+      content: '系统新增用户管理功能，欢迎使用。', 
+      type: 'normal', 
+      author: '技术部', 
+      time: '2024-01-14 14:20',
+      status: 'draft'
+    }
+  ]
+}
+
+const createNotice = () => {
+  resetForm()
+  showModal.value = true
+}
+
+const editNotice = (notice) => {
+  editingNotice.value = notice
+  formData.value = { ...notice }
+  showModal.value = true
+}
+
+const deleteNotice = (notice) => {
+  if (confirm(`确定要删除通知 "${notice.title}" 吗？`)) {
+    notices.value = notices.value.filter(n => n.id !== notice.id)
+  }
+}
+
+const toggleStatus = (notice) => {
+  notice.status = notice.status === 'published' ? 'draft' : 'published'
+}
+
+const saveNotice = () => {
+  if (editingNotice.value) {
+    // 更新通知
+    const index = notices.value.findIndex(n => n.id === editingNotice.value.id)
+    notices.value[index] = { 
+      ...formData.value,
+      author: '管理员',
+      time: new Date().toLocaleDateString()
+    }
+  } else {
+    // 创建通知
+    const newNotice = {
+      ...formData.value,
+      id: Date.now(),
+      author: '管理员',
+      time: new Date().toLocaleDateString()
+    }
+    notices.value.push(newNotice)
+  }
+  
+  closeModal()
+}
+
+const resetForm = () => {
+  formData.value = {
+    id: '',
+    title: '',
+    content: '',
+    type: 'normal',
+    status: 'draft'
+  }
+  editingNotice.value = null
+}
+
+const closeModal = () => {
+  showModal.value = false
+  resetForm()
+}
+
+// 生命周期
+onMounted(() => {
+  loadNotices()
+})
 </script>
-<style scoped lang="scss"></style>
+
+<style scoped>
+.notice-management {
+  padding: 20px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.notice-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.notice-item {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.notice-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.notice-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.notice-type {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.notice-type.normal {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.notice-type.important {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.notice-type.urgent {
+  background: #ffebee;
+  color: #d32f2f;
+}
+
+.notice-content {
+  color: #666;
+  margin: 10px 0;
+  line-height: 1.6;
+}
+
+.notice-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  color: #999;
+  font-size: 14px;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-edit, .btn-delete, .btn-publish, .btn-unpublish {
+  padding: 4px 8px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-edit {
+  background: #2196f3;
+  color: white;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+}
+
+.btn-publish {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-unpublish {
+  background: #ff9800;
+  color: white;
+}
+
+/* 模态框样式（复用之前的样式，可适当调整） */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  min-width: 500px;
+  max-width: 600px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-cancel, .btn-save {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-cancel {
+  background: #f5f5f5;
+  color: #333;
+}
+
+.btn-cancel:hover {
+  background: #e0e0e0;
+}
+
+.btn-save {
+  background: #4caf50;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #45a049;
+}
+</style>
