@@ -13,21 +13,19 @@ import java.time.LocalDateTime;
 @ToString
 @Builder
 public class QueryDto {
-    /**
-     * 当前页
-     */
+   //ID
+    private Integer id;
+
+   //当前页
     private Integer current;
-    /**
-     * 页面数据大小
-     */
+
+    //页面数据大小
     private Integer size;
-    /**
-     * 开始时间
-     */
+
+    //开始时间
     private LocalDateTime startTime;
-    /**
-     * 结束时间
-     */
+
+    //结束时间
     private LocalDateTime endTime;
 }
 
