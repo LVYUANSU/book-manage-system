@@ -1,4 +1,12 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>智慧图书管理系统</title><link rel="icon" href="logo.png" type="image/png"><style>* {
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧图书管理系统</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <style>
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -238,7 +246,93 @@
             .login-section {
                 padding: 20px;
             }
-        }</style><link href="/book-manage-system/css/chunk-1ae133b5.77c73b91.css" rel="prefetch"><link href="/book-manage-system/css/chunk-21dfadec.df34d4ed.css" rel="prefetch"><link href="/book-manage-system/css/chunk-313e157d.4064bcee.css" rel="prefetch"><link href="/book-manage-system/css/chunk-37dda608.8b120176.css" rel="prefetch"><link href="/book-manage-system/css/chunk-6ef997d3.64d7e2f9.css" rel="prefetch"><link href="/book-manage-system/css/chunk-6f3c6462.3555b59f.css" rel="prefetch"><link href="/book-manage-system/css/chunk-771d4914.2fcbda11.css" rel="prefetch"><link href="/book-manage-system/css/chunk-b4372304.bbdad7cf.css" rel="prefetch"><link href="/book-manage-system/js/chunk-1ae133b5.53340a0e.js" rel="prefetch"><link href="/book-manage-system/js/chunk-21dfadec.d10c90b6.js" rel="prefetch"><link href="/book-manage-system/js/chunk-2d0b5f7b.38da74aa.js" rel="prefetch"><link href="/book-manage-system/js/chunk-313e157d.1e6d6376.js" rel="prefetch"><link href="/book-manage-system/js/chunk-37dda608.88695198.js" rel="prefetch"><link href="/book-manage-system/js/chunk-6ef997d3.5725197d.js" rel="prefetch"><link href="/book-manage-system/js/chunk-6f3c6462.642f205d.js" rel="prefetch"><link href="/book-manage-system/js/chunk-771d4914.3442f45b.js" rel="prefetch"><link href="/book-manage-system/js/chunk-b4372304.c329898b.js" rel="prefetch"><link href="/book-manage-system/css/app.7a7c4b21.css" rel="preload" as="style"><link href="/book-manage-system/css/chunk-vendors.1b08c453.css" rel="preload" as="style"><link href="/book-manage-system/js/app.102a92ef.js" rel="preload" as="script"><link href="/book-manage-system/js/chunk-vendors.86f6bfd8.js" rel="preload" as="script"><link href="/book-manage-system/css/chunk-vendors.1b08c453.css" rel="stylesheet"><link href="/book-manage-system/css/app.7a7c4b21.css" rel="stylesheet"></head><body><div class="container"><div class="header"><div class="logo-container"><img src="logo.png" alt="图书管理系统 Logo" class="logo"><div><h1 class="title">智慧图书管理系统</h1><p class="subtitle">智能化、高效化的图书管理解决方案</p></div></div></div><div class="main-content"><div class="welcome-section"><h2 class="welcome-title">欢迎使用智慧图书管理系统</h2><p class="welcome-text">一个集图书管理、借阅追踪、会员管理、数据分析于一体的现代化图书管理系统。 帮助图书馆、学校和企业实现图书资源的智能化管理。</p><div class="features"><div class="feature-item"><span class="feature-icon">📚</span> <span>智能图书管理，支持扫码入库</span></div><div class="feature-item"><span class="feature-icon">🔍</span> <span>快速检索系统，支持多条件查询</span></div><div class="feature-item"><span class="feature-icon">👥</span> <span>会员管理系统，记录借阅历史</span></div><div class="feature-item"><span class="feature-icon">📊</span> <span>数据统计分析，生成可视化报表</span></div><div class="feature-item"><span class="feature-icon">🔔</span> <span>智能提醒功能，逾期自动通知</span></div></div></div><div class="login-section"><h2 class="login-title">管理员登录</h2><form class="login-form" id="loginForm"><div class="form-group"><label for="username">用户名</label> <input type="text" id="username" placeholder="请输入管理员账号" required></div><div class="form-group"><label for="password">密码</label> <input type="password" id="password" placeholder="请输入登录密码" required></div><button type="submit" class="login-btn">登录系统</button><div class="register-link">没有账户？<a href="#" onclick="showRegister()">立即注册</a></div></form></div></div><div class="footer"><p>© 2025 智慧图书管理系统 版权所有</p><p class="copyright">技术支持：张许烨，陈丽，许梓晗</p></div></div><script>// 登录表单提交处理
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="logo.png" alt="图书管理系统 Logo" class="logo">
+                <div>
+                    <h1 class="title">智慧图书管理系统</h1>
+                    <p class="subtitle">智能化、高效化的图书管理解决方案</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="welcome-section">
+                <h2 class="welcome-title">欢迎使用智慧图书管理系统</h2>
+                <p class="welcome-text">
+                    一个集图书管理、借阅追踪、会员管理、数据分析于一体的现代化图书管理系统。
+                    帮助图书馆、学校和企业实现图书资源的智能化管理。
+                </p>
+                
+                <div class="features">
+                    <div class="feature-item">
+                        <span class="feature-icon">📚</span>
+                        <span>智能图书管理，支持扫码入库</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔍</span>
+                        <span>快速检索系统，支持多条件查询</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">👥</span>
+                        <span>会员管理系统，记录借阅历史</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span>数据统计分析，生成可视化报表</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🔔</span>
+                        <span>智能提醒功能，逾期自动通知</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="login-section">
+                <h2 class="login-title">管理员登录</h2>
+                <form class="login-form" id="loginForm">
+                    <div class="form-group">
+                        <label for="username">用户名</label>
+                        <input 
+                            type="text" 
+                            id="username" 
+                            placeholder="请输入管理员账号" 
+                            required
+                        >
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            placeholder="请输入登录密码" 
+                            required
+                        >
+                    </div>
+                    
+                    <button type="submit" class="login-btn">登录系统</button>
+                    
+                    <div class="register-link">
+                        没有账户？<a href="#" onclick="showRegister()">立即注册</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>© 2025 智慧图书管理系统 版权所有</p>
+            <p class="copyright">技术支持：张许烨，陈丽，许梓晗 </p>
+        </div>
+    </div>
+
+    <script>
+        // 登录表单提交处理
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
@@ -282,4 +376,7 @@
                     document.getElementById('loginForm').dispatchEvent(new Event('submit'));
                 }
             }
-        });</script><script src="/book-manage-system/js/chunk-vendors.86f6bfd8.js"></script><script src="/book-manage-system/js/app.102a92ef.js"></script></body></html>
+        });
+    </script>
+</body>
+</html>
