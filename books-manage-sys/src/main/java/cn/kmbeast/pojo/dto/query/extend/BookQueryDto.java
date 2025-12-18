@@ -10,7 +10,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class BookQueryDto extends QueryDto {
-
     /**
      * 书籍名
      */
@@ -19,5 +18,17 @@ public class BookQueryDto extends QueryDto {
      * 出版商
      */
     private String publisher;
+    /**
+     * 图书类别ID
+     */
+    private Integer categoryId;
+    /**
+     * 是否为预售书籍
+     */
+    private Boolean isPlanBuy;
+    /**
+     * 用户ID
+     */
+    private Integer userId;
 
 }

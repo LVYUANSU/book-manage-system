@@ -5,40 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6adcc8cf-9a0b-4afe-a9c6-9defa3dec39b" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/impl/BookshelfServiceImpl.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/mapper/NoticeMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/mapper/NoticeMapper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/pojo/dto/save/TestHistoryDto.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/NoticeService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/NoticeService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.yml" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/base/QueryDto$QueryDtoBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/base/QueryDto$QueryDtoBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/base/QueryDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/base/QueryDto.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/AutoCreatePaper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/EvaluationsQueryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/PaperPracticeQueryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/PaperQueryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/PracticeQueryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/ProjectTypeQueryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/TestHistoryQueryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/save/TestHistoryDto.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/Evaluations.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/Paper.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/PaperPractice.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/Practice.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/ProjectType$ProjectTypeBuilder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/ProjectType.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/entity/TestHistory.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/CommentChildVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/CommentParentVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/EvaluationsVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/PaperPracticeVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/PaperVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/PracticeTypeVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/PracticeVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/vo/TestHistoryVO.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/service/impl/ViewsServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/kmbeast/service/impl/ViewsServiceImpl.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/controller/BookshelfController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/controller/BookshelfController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/pojo/dto/query/extend/BookQueryDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/pojo/dto/query/extend/BookQueryDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/BookSelfService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/BookshelfService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/BookService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/BookService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/impl/BookServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/cn/kmbeast/service/impl/BookServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/controller/BookshelfController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/kmbeast/controller/BookshelfController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/BookQueryDto.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/kmbeast/pojo/dto/query/extend/BookQueryDto.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/service/BookSelfService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/cn/kmbeast/service/impl/BookServiceImpl.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/cn/kmbeast/service/impl/BookServiceImpl.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,6 +57,9 @@
       </MavenGeneralSettings>
     </option>
   </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 5
 }</component>
@@ -116,7 +96,7 @@
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.BookManageSysApplication.executor": "Debug",
+    "Spring Boot.BookManageSysApplication.executor": "Run",
     "Spring Boot.ClassNetApplication.executor": "Run",
     "Spring Boot.ClassroomApplication (1).executor": "Run",
     "Spring Boot.ClassroomApplication.executor": "Run",
@@ -179,7 +159,7 @@
         <entry key="SpringBootApplicationConfigurationType">
           <value>
             <map>
-              <entry key="BookManageSysApplication" value="FAILED" />
+              <entry key="BookManageSysApplication" value="STOPPED" />
             </map>
           </value>
         </entry>
@@ -309,6 +289,7 @@
       <workItem from="1765964821400" duration="150000" />
       <workItem from="1766029276361" duration="548000" />
       <workItem from="1766035386849" duration="2163000" />
+      <workItem from="1766037853305" duration="2217000" />
     </task>
     <servers />
   </component>

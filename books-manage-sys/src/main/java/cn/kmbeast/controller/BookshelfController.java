@@ -4,8 +4,8 @@ import cn.kmbeast.aop.Pager;
 import cn.kmbeast.pojo.api.Result;
 import cn.kmbeast.pojo.dto.query.extend.BookshelfQueryDto;
 import cn.kmbeast.pojo.entity.BookShelf;
-import cn.kmbeast.service.BookSelfService;
-import cn.kmbeast.service.BookSelfService;
+import cn.kmbeast.service.BookshelfService;
+import cn.kmbeast.service.BookshelfService;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -19,7 +19,7 @@ import java.util.List;
 public class BookshelfController {
 
     @Resource
-    private BookSelfService bookshelfService;
+    private BookshelfService bookshelfService;
 
     /**
      * 书架新增

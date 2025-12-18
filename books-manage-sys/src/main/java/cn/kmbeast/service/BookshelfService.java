@@ -10,7 +10,7 @@ import java.util.List;
  * 书架业务逻辑接口
  */
 
-public interface BookSelfService {
+public interface BookshelfService {
     Result<Void> save(BookShelf bookShelf);
 
     Result<Void> batchDelete(List<Integer> ids);
